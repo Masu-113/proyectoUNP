@@ -64,14 +64,14 @@
 <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container">
-            @Html.ActionLink("Seguros Vehiculos", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @Html.ActionLink("Seguros Vehiculos", "Empleados", "Home", new { area = "" }, new { @class = "navbar-brand" })
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end">
                 <ul class="navbar-nav">
-                    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Inicio", "Empleados", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Login", "Login", "UserPerfile", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
@@ -82,7 +82,7 @@
     <div class="sidebar" id="sidebar">
         <h4>Menu</h4>
         <ul class="navbar-nav" style="list-style-type: none; padding: 0;">
-            <li class="nav-item">@Html.ActionLink("Ingresar Conductor", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+            <li class="nav-item">@Html.ActionLink("Empleados", "Empleados", "Home", new { area = "" }, new { @class = "nav-link" })</li>
             <li class="nav-item">@Html.ActionLink("Ingresar Vehiculo", "Vehiculo", "Home", new { area = "" }, new { @class = "nav-link" })</li>
             <li class="nav-item">@Html.ActionLink("Poliza", "Poliza", "Home", new { area = "" }, new { @class = "nav-link" })</li>
             <li class="nav-item">@Html.ActionLink("Charts", "Charts", "Home", new { area = "" }, new { @class = "nav-link" })</li>
