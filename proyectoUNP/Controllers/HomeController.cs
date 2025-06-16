@@ -8,7 +8,7 @@ namespace proyectoUNP.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Empleados()
+        public ActionResult Index()
         {
             return View();
         }
@@ -20,10 +20,8 @@ namespace proyectoUNP.Controllers
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult BajaEmpleado()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
     }

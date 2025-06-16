@@ -13,11 +13,20 @@ namespace proyectoUNP
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            // Ruta personalizada para UserPerfile/Login
+            routes.MapRoute(
+                name: "RutaPersonalizadaLogin",
+                url: "UserPerfile/Login",
+                defaults: new { controller = "Login", action = "Index" }
+            );
+
+            // Ruta por defecto (IMPORTANTE)
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Login", action = "Index", id = UrlParameter.Optional }
             );
         }
     }
 }
+

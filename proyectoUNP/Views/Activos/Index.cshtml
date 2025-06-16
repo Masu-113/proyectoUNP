@@ -1,0 +1,302 @@
+﻿@{
+    var adquisicionesVista = ViewBag.Adquisiciones as List<SelectListItem> ?? new List<SelectListItem>();
+    var activos = ViewBag.Activos as List<proyectoUNP.Models.Activos> ?? new List<proyectoUNP.Models.Activos>();
+    var tipos = ViewBag.Tipos as List<SelectListItem> ?? new List<SelectListItem>();
+    var marcas = ViewBag.Marcas as List<SelectListItem> ?? new List<SelectListItem>();
+    var estados = ViewBag.Estados as List<SelectListItem> ?? new List<SelectListItem>();
+    var proveedores = ViewBag.Proveedores as List<SelectListItem> ?? new List<SelectListItem>();
+    var empleados = ViewBag.Empleados as List<SelectListItem> ?? new List<SelectListItem>();
+    var ubicaciones = ViewBag.Ubicaciones as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["MensajeError"]</div>
+}
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["MensajeExito"]</div>
+}
+
+<div class="container mt-4">
+    @using (Html.BeginForm("CrearActivo", "Activos", FormMethod.Post, new { id = "formActivo" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Activo</h4>
+            </div>
+            <div class="card-body">
+                <!-- Selección de Adquisición -->
+                <select id="IdAdquisicion" name="IdAdquisicion" class="form-control" required onchange="mostrarInfoAdquisicion()">
+                    <option value="">--Seleccione--</option>
+                    @foreach (var a in adquisicionesVista)
+                    {
+                        var partes = a.Text.Split('|');
+                        string nombre = partes.Length > 0 ? partes[0] : "N/A";
+                        string fecha = partes.Length > 1 ? partes[1] : "";
+                        string monto = partes.Length > 2 ? partes[2].Trim() : "0.00";
+                        string proveedor = partes.Length > 3 ? partes[3].Trim() : "";
+                        string empleado = partes.Length > 4 ? partes[4].Trim() : "";
+                        string idProveedor = partes.Length > 5 ? partes[5] : "";
+                        string idEmpleado = partes.Length > 6 ? partes[6] : "";
+
+                        <option value="@a.Value"
+                                data-fecha="@fecha"
+                                data-monto="@monto"
+                                data-proveedor="@proveedor"
+                                data-empleado="@empleado"
+                                data-idproveedor="@idProveedor"
+                                data-idempleado="@idEmpleado">
+                            @nombre - @fecha - @monto
+                        </option>
+                    }
+                </select>
+                <div id="infoAdquisicion" class="mb-3" style="display:none;">
+                    <p><strong>Fecha:</strong> <span id="fechaAdq"></span></p>
+                    <p><strong>Monto:</strong> <span id="montoAdq"></span></p>
+                    <p><strong>Proveedor:</strong> <span id="provAdq"></span></p>
+                    <p><strong>Empleado:</strong> <span id="empAdq"></span></p>
+                </div>
+
+                <hr />
+
+                <!-- Formulario del Activo -->
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="Nombre">Nombre *</label>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre" required maxlength="30" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="NumeroSerie">Número de Serie *</label>
+                        <input type="text" class="form-control" id="NumeroSerie" name="NumeroSerie" required placeholder="AAA-0000-AAA" maxlength="10" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdTipo">Tipo de Activo *</label>
+                        <select class="form-control" id="IdTipo" name="IdTipo" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var tipo in tipos)
+                            {
+                                <option value="@tipo.Value">@tipo.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdMarca">Marca *</label>
+                        <select class="form-control" id="IdMarca" name="IdMarca" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var marca in marcas)
+                            {
+                                <option value="@marca.Value">@marca.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="Costo">Costo *</label>
+                        <input type="number" step="0.01" class="form-control" id="Costo" name="Costo" required readonly />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="FechaCompra">Fecha de Compra *</label>
+                        <input type="date" class="form-control" id="FechaCompra" name="FechaCompra" required disabled />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="Garantia">¿Tiene Garantía?</label>
+                        <select class="form-control" id="Garantia" name="Garantia">
+                            <option value="true">Sí</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="IdEstAct">Estado Actual *</label>
+                        <select class="form-control" id="IdEstAct" name="IdEstAct" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var estado in estados)
+                            {
+                                <option value="@estado.Value">@estado.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdProveedor">Proveedor *</label>
+                        <select class="form-control" id="IdProveedor" name="IdProveedor" required disabled>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var prov in proveedores)
+                            {
+                                <option value="@prov.Value">@prov.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdEmpleado">Empleado Asignado *</label>
+                        <select class="form-control" id="IdEmpleado" name="IdEmpleado" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var emp in empleados)
+                            {
+                                <option value="@emp.Value">@emp.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="IdUbicacion">Ubicación *</label>
+                    <select class="form-control" id="IdUbicacion" name="IdUbicacion" required>
+                        <option value="">--Seleccione--</option>
+                        @foreach (var ubi in ubicaciones)
+                        {
+                            <option value="@ubi.Value">@ubi.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="UsuarioModificacion">Usuario Modificación</label>
+                    <input type="text" class="form-control" id="UsuarioModificacion" name="UsuarioModificacion" maxlength="30" />
+                </div>
+
+                <button type="button" class="btn btn-primary" id="btnAbrirModal">Guardar Activo</button>
+            </div>
+        </div>
+    }
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" role="dialog" aria-labelledby="modalConfirmarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalConfirmarLabel">Confirmar Registro</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar" style="background-color:red;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Deseas registrar este activo?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btnConfirmarEnvio">Sí, Registrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:red;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de activos -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Lista de Activos</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>N° Serie</th>
+                        <th>Estado</th>
+                        <th>Empleado</th>
+                        <th>Ubicación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in activos)
+                    {
+                        <tr>
+                            <td>@a.IdActivos</td>
+                            <td>@a.Nombre</td>
+                            <td>@(a.TipoDeActivo?.Nombre ?? "-")</td>
+                            <td>@(a.Marca?.Nombre ?? "-")</td>
+                            <td>@a.NumeroSerie</td>
+                            <td>@(a.EstadoActual?.Estado_Actual ?? "-")</td>
+                            <td>@(a.Empleado?.PNU + " " + a.Empleado?.PAU ?? "-")</td>
+                            <td>@(a.Ubicacion?.Direccion ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function mostrarInfoAdquisicion() {
+            var select = document.getElementById("IdAdquisicion");
+            var selected = select.options[select.selectedIndex];
+            var montoStr = selected.getAttribute("data-monto") || "";
+            montoStr = montoStr.replace(/,/g, ".");
+            console.log("Monto corregido para input:", montoStr);
+
+            if (select.value !== "") {
+                document.getElementById("infoAdquisicion").style.display = "block";
+                document.getElementById("fechaAdq").textContent = selected.getAttribute("data-fecha");
+                document.getElementById("Costo").value = parseFloat(montoStr);
+                document.getElementById("provAdq").textContent = selected.getAttribute("data-proveedor");
+                document.getElementById("empAdq").textContent = selected.getAttribute("data-empleado");
+
+                document.getElementById("FechaCompra").value = selected.getAttribute("data-fecha");
+                document.getElementById("Costo").value = montoStr;
+
+                document.getElementById("IdProveedor").value = selected.getAttribute("data-idproveedor");
+                document.getElementById("IdEmpleado").value = selected.getAttribute("data-idempleado");
+            } else {
+                document.getElementById("infoAdquisicion").style.display = "none";
+                document.getElementById("FechaCompra").value = "";
+                document.getElementById("Costo").value = "";
+                document.getElementById("IdProveedor").value = "";
+                document.getElementById("IdEmpleado").value = "";
+                document.getElementById("montoAdq").textContent = ""; // limpia también el monto
+            }
+        }
+
+
+
+        document.getElementById("btnAbrirModal").addEventListener("click", function () {
+            // Validar campos obligatorios
+            const nombre = document.getElementById("Nombre").value.trim();
+            const numeroSerie = document.getElementById("NumeroSerie").value.trim();
+            const idTipo = document.getElementById("IdTipo").value;
+            const idMarca = document.getElementById("IdMarca").value;
+            const costo = document.getElementById("Costo").value;
+            const fechaCompra = document.getElementById("FechaCompra").value;
+            const idEstAct = document.getElementById("IdEstAct").value;
+            const idProveedor = document.getElementById("IdProveedor").value;
+            const idEmpleado = document.getElementById("IdEmpleado").value;
+            const idUbicacion = document.getElementById("IdUbicacion").value;
+
+            // Validar que los campos obligatorios no estén vacíos
+            if (!nombre || !numeroSerie || !idTipo || !idMarca || !costo || !fechaCompra || !idEstAct) {
+                alert("Por favor, complete todos los campos obligatorios.");
+                return;
+            }
+
+            // Validar que sólo se seleccione o Empleado o Ubicación, no ambos ni ninguno
+            const empleadoSeleccionado = idEmpleado !== "";
+            const ubicacionSeleccionada = idUbicacion !== "";
+
+            if (empleadoSeleccionado && ubicacionSeleccionada) {
+                alert("Solo puede asignar el activo a un Empleado o a una Ubicación, no a ambos.");
+                return;
+            }
+            if (!empleadoSeleccionado && !ubicacionSeleccionada) {
+                alert("Debe asignar el activo a un Empleado o a una Ubicación.");
+                return;
+            }
+
+            // Mostrar modal de confirmación
+            $("#modalConfirmar").modal("show");
+        });
+
+        // Confirmar el envío del formulario al hacer clic en "Sí, Registrar"
+        document.getElementById("btnConfirmarEnvio").addEventListener("click", function () {
+            document.getElementById("formActivo").submit();
+        });
+    </script>
+}
+

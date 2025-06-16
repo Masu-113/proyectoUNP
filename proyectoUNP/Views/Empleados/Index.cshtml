@@ -1,0 +1,192 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var universidades = ViewBag.Universidades as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var escuelas = ViewBag.Escuelas as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var cargos = ViewBag.Cargos as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var empleados = ViewBag.Empleados as IEnumerable<proyectoUNP.Models.Empleado> ?? new List<proyectoUNP.Models.Empleado>();
+}
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["MensajeError"]</div>
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["MensajeExito"]</div>
+}
+
+<style>
+    .titulo {
+        font-weight: bold;
+        font-size: 20px;
+        color: #001c7d;
+        margin-bottom: 20px;
+    }
+
+    .aviso {
+        background-color: #dc3545;
+        padding: 10px;
+        color: white;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-4">
+
+    @* Mensaje de confirmación o error *@
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="aviso">@TempData["Mensaje"]</div>
+    }
+
+    @using (Html.BeginForm("CrearEmpleado", "Empleados", FormMethod.Post, new { id = "formEmpleado" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registro de Empleado</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="PNU">Primer Nombre *</label>
+                        <input type="text" class="form-control" id="PNU" name="PNU" required />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="SNU">Segundo Nombre</label>
+                        <input type="text" class="form-control" id="SNU" name="SNU" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="PAU">Primer Apellido *</label>
+                        <input type="text" class="form-control" id="PAU" name="PAU" required />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="SAU">Segundo Apellido</label>
+                        <input type="text" class="form-control" id="SAU" name="SAU" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="Cedula">Cédula *</label>
+                        <input type="text" class="form-control" id="Cedula" name="Cedula"
+                               required pattern="\d{3}-\d{6}-\d{4}[A-Z]" />
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="IdUniversidad">Universidad *</label>
+                        <select class="form-control" id="IdUniversidad" name="IdUniversidad" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var u in universidades)
+                            {
+                                <option value="@u.Value">@u.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="IdEscuela">Escuela</label>
+                        <select class="form-control" id="IdEscuela" name="IdEscuela">
+                            <option value="">--Seleccione--</option>
+                            @foreach (var e in escuelas)
+                            {
+                                <option value="@e.Value">@e.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="IdCargo">Cargo *</label>
+                        <select class="form-control" id="IdCargo" name="IdCargo" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var c in cargos)
+                            {
+                                <option value="@c.Value">@c.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="btnAbrirModal">
+                    Crear Empleado
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" role="dialog" aria-labelledby="modalConfirmarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalConfirmarLabel">Confirmar Registro</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar" style="background-color: red">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas registrar este empleado?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btnConfirmarEnvio">Sí, Registrar</button>
+                    <button type="button" class="btn btn-secondary" style="background-color: red" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Lista de Empleados</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Cédula</th>
+                        <th>Universidad</th>
+                        <th>Escuela</th>
+                        <th>Cargo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var emp in empleados)
+                    {
+                        <tr>
+                            <td>@emp.IdEmpleado</td>
+                            <td>@emp.PNU @emp.SNU @emp.PAU @emp.SAU</td>
+                            <td>@emp.Cedula</td>
+                            <td>@(emp.Universidad?.Nombre ?? "-")</td>
+                            <td>@(emp.Escuela?.NombreEscuela ?? "-")</td>
+                            <td>@(emp.Cargo?.NombreCargo ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Mostrar el modal al hacer clic en "Crear Empleado"
+        document.getElementById("btnAbrirModal").addEventListener("click", function () {
+            $('#modalConfirmar').modal('show');
+        });
+
+        // Enviar el formulario cuando se confirme en el modal
+        document.getElementById("btnConfirmarEnvio").addEventListener("click", function () {
+            document.getElementById("formEmpleado").submit();
+        });
+
+    </script>
+}

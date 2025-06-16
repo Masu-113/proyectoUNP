@@ -127,10 +127,35 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ActivosController.cs" />
+    <Compile Include="Controllers\AdquisicionesController.cs" />
+    <Compile Include="Controllers\BarriosController.cs" />
+    <Compile Include="Controllers\DepartamentController.cs" />
+    <Compile Include="Controllers\EmpleadosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MunicipiosController.cs" />
+    <Compile Include="Controllers\ProveedoresController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Activo.cs" />
+    <Compile Include="Models\Adquisiciones.cs" />
+    <Compile Include="Models\Barrio.cs" />
+    <Compile Include="Models\Cargo.cs" />
+    <Compile Include="Models\Departamento.cs" />
+    <Compile Include="Models\Empleado.cs" />
+    <Compile Include="Models\Escuela.cs" />
+    <Compile Include="Models\EstadoActual.cs" />
+    <Compile Include="Models\Marca.cs" />
+    <Compile Include="Models\Municipio.cs" />
+    <Compile Include="Models\Proveedor.cs" />
+    <Compile Include="Models\Sist_ControlActivos2Context.cs" />
+    <Compile Include="Models\TipoDeActivo.cs" />
+    <Compile Include="Models\TipoUser.cs" />
+    <Compile Include="Models\Ubicacion.cs" />
+    <Compile Include="Models\Universidades.cs" />
+    <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -182,12 +207,32 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Empleados.cshtml" />
+    <Content Include="Views\Home\BajaEmpleado.cshtml" />
+    <Content Include="Views\Empleados\Index.cshtml" />
+    <Content Include="Views\Activos\Index.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Adquisiciones\Index.cshtml" />
+    <Content Include="Views\Shared\_LoginLayout.cshtml" />
+    <Content Include="Views\UserPerfile\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="Views\Barrios\" />
+    <Folder Include="Views\Cargo\" />
+    <Folder Include="Views\Departamento\" />
+    <Folder Include="Views\Departament\" />
+    <Folder Include="Views\Escuela\" />
+    <Folder Include="Views\EstadoActual\" />
+    <Folder Include="Views\Login\" />
+    <Folder Include="Views\Marca\" />
+    <Folder Include="Views\Municipios\" />
+    <Folder Include="Views\Proveedores\" />
+    <Folder Include="Views\Sist_ControlActivos2Context\" />
+    <Folder Include="Views\TipoDeActivo\" />
+    <Folder Include="Views\TipoUser\" />
+    <Folder Include="Views\Ubicacion\" />
+    <Folder Include="Views\Universidades\" />
+    <Folder Include="Views\Users\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

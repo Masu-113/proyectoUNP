@@ -1,0 +1,251 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var proveedores = ViewBag.Proveedores as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var empleados = ViewBag.Empleados as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+    var adquisiciones = ViewBag.Adquisiciones as IEnumerable<proyectoUNP.Models.Adquisicion> ?? new List<proyectoUNP.Models.Adquisicion>();
+}
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["MensajeError"]</div>
+}
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["MensajeExito"]</div>
+}
+
+<div class="container mt-4">
+    @using (Html.BeginForm("Create", "Adquisiciones", FormMethod.Post, new { id = "formAdquisicion" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Adquisición</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="Fecha">Fecha *</label>
+                        <input type="date" class="form-control" id="Fecha" name="Fecha" required />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="TipoAdquisicion">Tipo de Adquisición *</label>
+                        <select class="form-control" id="TipoAdquisicion" name="TipoAdquisicion" required>
+                            <option value="">--Seleccione--</option>
+                            <option value="Compra">Compra</option>
+                            <option value="Donación">Donación</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="NumeroFactura">Número de Factura</label>
+                        <input type="text" class="form-control" id="NumeroFactura" name="NumeroFactura" maxlength="50" />
+                        <small class="form-text text-muted">ejemplo: FAC-2025-00123</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="Monto">Monto</label>
+                        <input type="number" class="form-control" id="Monto" name="Monto" step="0.01" min="0" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdProveedor">Proveedor</label>
+                        <select class="form-control" id="IdProveedor" name="IdProveedor">
+                            <option value="">--Seleccione--</option>
+                            @foreach (var p in proveedores)
+                            {
+                                <option value="@p.Value">@p.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdEmpleado">Empleado Responsable</label>
+                        <select class="form-control" id="IdEmpleado" name="IdEmpleado">
+                            <option value="">--Seleccione--</option>
+                            @foreach (var e in empleados)
+                            {
+                                <option value="@e.Value">@e.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Descripcion">Descripción</label>
+                    <textarea class="form-control" id="Descripcion" name="Descripcion" rows="2" maxlength="100" required></textarea>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="btnAbrirModal">Guardar Adquisición</button>
+            </div>
+        </div>
+    }
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" role="dialog" aria-labelledby="modalConfirmarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalConfirmarLabel">Confirmar Registro</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar" style="background-color:red;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Deseas registrar esta adquisición?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btnConfirmarEnvio">Sí, Registrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:red;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de adquisiciones -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Lista de Adquisiciones</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Factura</th>
+                        <th>Proveedor</th>
+                        <th>Empleado</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in adquisiciones)
+                    {
+                        <tr>
+                            <td>@a.IdAdquisicion</td>
+                            <td>@a.Fecha.ToShortDateString()</td>
+                            <td>@a.TipoAdquisicion</td>
+                            <td>@(a.Monto.HasValue ? a.Monto.Value.ToString("C") : "-")</td>
+                            <td>@a.NumeroFactura</td>
+                            <td>@(a.Proveedor?.Nombre ?? "-")</td>
+                            <td>@(a.Empleado?.PNU + " " + a.Empleado?.PAU ?? "-")</td>
+                            <td>@a.Descripcion</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            document.getElementById("btnAbrirModal").addEventListener("click", function () {
+                var isValid = true;
+                clearErrors();
+
+                var fechaInput = document.getElementById("Fecha");
+                var tipoAdquisicion = document.getElementById("TipoAdquisicion");
+                var descripcionInput = document.getElementById("Descripcion");
+                var montoInput = document.getElementById("Monto");
+                var numeroFacturaInput = document.getElementById("NumeroFactura");
+                var proveedorInput = document.getElementById("IdProveedor");
+                var empleadoInput = document.getElementById("IdEmpleado");
+
+                // Validar Fecha
+                if (!fechaInput.value) {
+                    showError(fechaInput, "La fecha es obligatoria.");
+                    isValid = false;
+                }
+
+                // Validar Tipo de Adquisición
+                if (!tipoAdquisicion.value) {
+                    showError(tipoAdquisicion, "Seleccione el tipo de adquisición.");
+                    isValid = false;
+                }
+
+                // Validar Descripción
+                if (!descripcionInput.value.trim()) {
+                    showError(descripcionInput, "La descripción es obligatoria.");
+                    isValid = false;
+                }
+
+                // Validar Proveedor
+                if (!proveedorInput.value) {
+                    showError(proveedorInput, "Seleccione un proveedor.");
+                    isValid = false;
+                }
+
+                // Validar Empleado Responsable
+                if (!empleadoInput.value) {
+                    showError(empleadoInput, "Seleccione un empleado responsable.");
+                    isValid = false;
+                }
+
+                // Validar Monto y Factura solo si es "Compra"
+                if (tipoAdquisicion.value === "Compra") {
+                    if (!montoInput.value) {
+                        showError(montoInput, "El monto es obligatorio.");
+                        isValid = false;
+                    }
+                    let regexFactura = /^[A-Z0-9\-]{3,50}$/i; // Letras, números y guiones
+                    if (!numeroFacturaInput.value.trim()) {
+                        showError(numeroFacturaInput, "El número de factura es obligatorio.");
+                        isValid = false;
+                    } else if (!regexFactura.test(numeroFacturaInput.value.trim())) {
+                        showError(numeroFacturaInput, "El formato de la factura no es válido.");
+                        isValid = false;
+                    }
+                }
+
+                if (isValid) {
+                    $('#modalConfirmar').modal('show');
+                }
+            });
+
+            document.getElementById("btnConfirmarEnvio").addEventListener("click", function () {
+                document.getElementById("formAdquisicion").submit();
+            });
+
+            document.getElementById("TipoAdquisicion").addEventListener("change", function () {
+                var tipoAdquisicion = this.value;
+                var montoInput = document.getElementById("Monto");
+                var numeroFacturaInput = document.getElementById("NumeroFactura");
+
+                if (tipoAdquisicion === "Donación") {
+                    montoInput.value = "";
+                    montoInput.disabled = true;
+                    numeroFacturaInput.value = "";
+                    numeroFacturaInput.disabled = true;
+                } else {
+                    montoInput.disabled = false;
+                    numeroFacturaInput.disabled = false;
+                }
+            });
+
+            function showError(input, message) {
+                input.classList.add("is-invalid");
+                var errorMessage = document.createElement("div");
+                errorMessage.className = "invalid-feedback";
+                errorMessage.innerText = message;
+                input.parentNode.appendChild(errorMessage);
+            }
+
+            function clearErrors() {
+                var inputs = document.querySelectorAll(".form-control");
+                inputs.forEach(function (input) {
+                    input.classList.remove("is-invalid");
+                    var errorMessages = input.parentNode.querySelectorAll(".invalid-feedback");
+                    errorMessages.forEach(function (msg) {
+                        msg.remove();
+                    });
+                });
+            }
+        });
+    </script>
+}

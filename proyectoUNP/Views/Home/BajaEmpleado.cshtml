@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "BajaEmpleado";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dar de Baja Empleado</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />}
+    <link rel="stylesheet" href="~/Content/Site.css" />
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Dar de Baja Empleado</h2>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Detalles del Empleado</h5>
+            </div>
+            <div class="card-body">
+                <h6>ID: [ID_EMPLEADO]</h6>
+                <p>Nombre: [NOMBRE_EMPLEADO]</p>
+                <p>Puesto: [PUESTO_EMPLEADO]</p>
+                <p>Salario: [SALARIO_EMPLEADO]</p>
+                <p>¿Está seguro que desea dar de baja a este empleado?</p>
+                <div class="text-center">
+                    <button type="button" class="btn btn-danger">Dar de Baja</button>
+                    <a href="@Url.Action("Index", "Empleado")" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>
