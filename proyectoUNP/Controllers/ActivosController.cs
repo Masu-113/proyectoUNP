@@ -27,12 +27,20 @@ public class ActivosController : Controller
         return View();
     }
 
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public ActionResult CrearActivo(Activos activos)
     {
         if (ModelState.IsValid)
         {
+            // Forzar NumeroSerie en mayúsculas para mantener consistencia
+            if (!string.IsNullOrEmpty(activos.NumeroSerie))
+            {
+                activos.NumeroSerie = activos.NumeroSerie.ToUpper();
+            }
+
             var existe = db.Activos.Any(e => e.NumeroSerie == activos.NumeroSerie);
             if (existe)
             {
@@ -72,7 +80,7 @@ public class ActivosController : Controller
                 .Include(a => a.Ubicacion)
                 .ToList();
 
-            return View("Index", activos); // <- Este return es necesario para que todos los caminos devuelvan algo
+            return View("Index", activos);
         }
     }
 

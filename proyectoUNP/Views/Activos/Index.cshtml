@@ -70,7 +70,7 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="NumeroSerie">Número de Serie *</label>
-                        <input type="text" class="form-control" id="NumeroSerie" name="NumeroSerie" required placeholder="AAA-0000-AAA" maxlength="10" />
+                        <input type="text" class="form-control" id="NumeroSerie" name="NumeroSerie" required placeholder="AAA-0000-AAA" maxlength="12" />
                     </div>
                     <div class="form-group col-md-4">
                         <label for="IdTipo">Tipo de Activo *</label>
@@ -96,7 +96,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <label for="Costo">Costo *</label>
-                        <input type="number" step="0.01" class="form-control" id="Costo" name="Costo" required readonly />
+                        <input type="number" step="0.01" min="0.01" class="form-control" id="Costo" name="Costo" required/>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="FechaCompra">Fecha de Compra *</label>
@@ -124,13 +124,14 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label for="IdProveedor">Proveedor *</label>
-                        <select class="form-control" id="IdProveedor" name="IdProveedor" required disabled>
+                        <select class="form-control" id="IdProveedor" name="IdProveedor" required>
                             <option value="">--Seleccione--</option>
                             @foreach (var prov in proveedores)
                             {
                                 <option value="@prov.Value">@prov.Text</option>
                             }
                         </select>
+                        <input type="hidden" id="IdProveedor" name="IdProveedor" />
                     </div>
                     <div class="form-group col-md-4">
                         <label for="IdEmpleado">Empleado Asignado *</label>
@@ -141,6 +142,7 @@
                                 <option value="@emp.Value">@emp.Text</option>
                             }
                         </select>
+                        <input type="hidden" id="IdEmpleado" name="IdEmpleado" />
                     </div>
                 </div>
 
@@ -198,6 +200,7 @@
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Tipo</th>
+                        <th>Marca</th>
                         <th>N° Serie</th>
                         <th>Estado</th>
                         <th>Empleado</th>
@@ -214,11 +217,12 @@
                             <td>@(a.Marca?.Nombre ?? "-")</td>
                             <td>@a.NumeroSerie</td>
                             <td>@(a.EstadoActual?.Estado_Actual ?? "-")</td>
-                            <td>@(a.Empleado?.PNU + " " + a.Empleado?.PAU ?? "-")</td>
+                            <td>@((a.Empleado != null) ? a.Empleado.PNU + " " + a.Empleado.PAU : "-")</td>
                             <td>@(a.Ubicacion?.Direccion ?? "-")</td>
                         </tr>
                     }
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -241,10 +245,12 @@
                 document.getElementById("empAdq").textContent = selected.getAttribute("data-empleado");
 
                 document.getElementById("FechaCompra").value = selected.getAttribute("data-fecha");
-                document.getElementById("Costo").value = montoStr;
-
+                document.getElementById("Costo").value = parseFloat(montoStr);
                 document.getElementById("IdProveedor").value = selected.getAttribute("data-idproveedor");
+                document.getElementById("IdProveedorDisabled").value = selected.getAttribute("data-idproveedor");
+
                 document.getElementById("IdEmpleado").value = selected.getAttribute("data-idempleado");
+                document.getElementById("IdEmpleadoDisabled").value = selected.getAttribute("data-idempleado");
             } else {
                 document.getElementById("infoAdquisicion").style.display = "none";
                 document.getElementById("FechaCompra").value = "";

@@ -15,6 +15,11 @@ namespace proyectoUNP.Models
         [Key]
         public int IdActivos { get; set; }
 
+        [ForeignKey("Adquisicion")]
+        [Required]
+        public int IdAdquisicion { get; set; }
+        public virtual Adquisicion Adquisicion { get; set; }
+
         [Required]
         [StringLength(30)]
         public string Nombre { get; set; }
@@ -63,7 +68,8 @@ namespace proyectoUNP.Models
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
         public DateTime? FechaModificacion { get; set; }
 
-        [StringLength(30)]
-        public string UsuarioModificacion { get; set; }
+        [Required]
+        public int UsuarioModificacion { get; set; }
+
     }
 }
