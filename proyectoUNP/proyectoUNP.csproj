@@ -131,11 +131,14 @@
     <Compile Include="Controllers\AdquisicionesController.cs" />
     <Compile Include="Controllers\BarriosController.cs" />
     <Compile Include="Controllers\DepartamentController.cs" />
+    <Compile Include="Controllers\DetallesMantenimientoController.cs" />
     <Compile Include="Controllers\EmpleadosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MantenimientoController.cs" />
     <Compile Include="Controllers\MunicipiosController.cs" />
     <Compile Include="Controllers\ProveedoresController.cs" />
+    <Compile Include="Controllers\TipoMantenimientoController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -144,14 +147,17 @@
     <Compile Include="Models\Barrio.cs" />
     <Compile Include="Models\Cargo.cs" />
     <Compile Include="Models\Departamento.cs" />
+    <Compile Include="Models\DetallesMantenimiento.cs" />
     <Compile Include="Models\Empleado.cs" />
     <Compile Include="Models\Escuela.cs" />
     <Compile Include="Models\EstadoActual.cs" />
+    <Compile Include="Models\Mantenimiento.cs" />
     <Compile Include="Models\Marca.cs" />
     <Compile Include="Models\Municipio.cs" />
     <Compile Include="Models\Proveedor.cs" />
     <Compile Include="Models\Sist_ControlActivos2Context.cs" />
     <Compile Include="Models\TipoDeActivo.cs" />
+    <Compile Include="Models\TipoMantenimiento.cs" />
     <Compile Include="Models\TipoUser.cs" />
     <Compile Include="Models\Ubicacion.cs" />
     <Compile Include="Models\Universidades.cs" />
@@ -214,6 +220,7 @@
     <Content Include="Views\Adquisiciones\Index.cshtml" />
     <Content Include="Views\Shared\_LoginLayout.cshtml" />
     <Content Include="Views\UserPerfile\Login.cshtml" />
+    <Content Include="Views\Mantenimiento\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -221,6 +228,7 @@
     <Folder Include="Views\Cargo\" />
     <Folder Include="Views\Departamento\" />
     <Folder Include="Views\Departament\" />
+    <Folder Include="Views\DetallesMantenimiento\" />
     <Folder Include="Views\Escuela\" />
     <Folder Include="Views\EstadoActual\" />
     <Folder Include="Views\Login\" />
@@ -229,6 +237,7 @@
     <Folder Include="Views\Proveedores\" />
     <Folder Include="Views\Sist_ControlActivos2Context\" />
     <Folder Include="Views\TipoDeActivo\" />
+    <Folder Include="Views\TipoMantenimiento\" />
     <Folder Include="Views\TipoUser\" />
     <Folder Include="Views\Ubicacion\" />
     <Folder Include="Views\Universidades\" />

@@ -37,6 +37,7 @@
 
 <div class="container mt-4">
 
+
     @* Mensaje de confirmación o error *@
     @if (TempData["Mensaje"] != null)
     {
@@ -46,7 +47,6 @@
     @using (Html.BeginForm("CrearEmpleado", "Empleados", FormMethod.Post, new { id = "formEmpleado" }))
     {
         @Html.AntiForgeryToken()
-
         <div class="card shadow mb-4">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">Registro de Empleado</h4>

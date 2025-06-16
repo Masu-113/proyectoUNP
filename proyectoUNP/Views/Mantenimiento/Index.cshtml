@@ -1,0 +1,166 @@
+﻿@{
+    // Listas desde ViewBag (ajusta nombres según tu controlador)
+    var mantenimientos = ViewBag.Mantenimientos as List<proyectoUNP.Models.Mantenimiento> ?? new List<proyectoUNP.Models.Mantenimiento>();
+    var tiposMantenimiento = ViewBag.TiposMantenimiento as List<SelectListItem> ?? new List<SelectListItem>();
+    var estadosMantenimiento = ViewBag.EstadosMantenimiento as List<SelectListItem> ?? new List<SelectListItem>();
+    var empleados = ViewBag.Empleados as List<SelectListItem> ?? new List<SelectListItem>();
+    var ubicaciones = ViewBag.Ubicaciones as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["MensajeError"]</div>
+}
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["MensajeExito"]</div>
+}
+
+<div class="container mt-4">
+    @using (Html.BeginForm("CrearMantenimiento", "Mantenimiento", FormMethod.Post, new { id = "formMantenimiento" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Registrar Mantenimiento</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="Descripcion">Descripción *</label>
+                        <input type="text" class="form-control" id="Descripcion" name="Descripcion" required maxlength="100" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="IdTipoMantenimiento">Tipo de Mantenimiento *</label>
+                        <select class="form-control" id="IdTipoMantenimiento" name="IdTipoMantenimiento" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var tipo in tiposMantenimiento)
+                            {
+                                <option value="@tipo.Value">@tipo.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="FechaMantenimiento">Fecha *</label>
+                        <input type="date" class="form-control" id="FechaMantenimiento" name="FechaMantenimiento" required />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="IdEstado">Estado *</label>
+                        <select class="form-control" id="IdEstado" name="IdEstado" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var estado in estadosMantenimiento)
+                            {
+                                <option value="@estado.Value">@estado.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="IdEmpleado">Empleado Asignado *</label>
+                        <select class="form-control" id="IdEmpleado" name="IdEmpleado" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var emp in empleados)
+                            {
+                                <option value="@emp.Value">@emp.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="IdUbicacion">Ubicación *</label>
+                        <select class="form-control" id="IdUbicacion" name="IdUbicacion" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var ubi in ubicaciones)
+                            {
+                                <option value="@ubi.Value">@ubi.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Observaciones">Observaciones</label>
+                    <textarea class="form-control" id="Observaciones" name="Observaciones" rows="3" maxlength="250"></textarea>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="btnAbrirModal">Guardar Mantenimiento</button>
+            </div>
+        </div>
+    }
+
+    <!-- Modal de Confirmación -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" role="dialog" aria-labelledby="modalConfirmarLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalConfirmarLabel">Confirmar Registro</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar" style="background-color:red;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Deseas registrar este mantenimiento?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btnConfirmarEnvio">Sí, Registrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color:red;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de mantenimientos -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Lista de Mantenimientos</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripción</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Empleado</th>
+                        <th>Ubicación</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in mantenimientos)
+                    {
+                        <tr>
+                            <td>@m.IdMantenimiento</td>
+                            <td>@m.Descripcion</td>
+                            <td>@(m.TipoMantenimiento?.Nombre ?? "-")</td>
+                            <td>@m.Fecha_Mantenimiento.ToString("dd/MM/yyyy")</td>
+                            <td>@m.Costo.ToString("C")</td>  <!-- Costo en formato moneda -->
+                            <td>@(m.Activo != null ? m.Activo.Nombre : "-")</td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Abrir modal confirmación al hacer clic en "Guardar Mantenimiento"
+        document.getElementById("btnAbrirModal").addEventListener("click", function () {
+            $('#modalConfirmar').modal('show');
+        });
+
+        // Confirmar envío del formulario
+        document.getElementById("btnConfirmarEnvio").addEventListener("click", function () {
+            document.getElementById("formMantenimiento").submit();
+        });
+    </script>
+}

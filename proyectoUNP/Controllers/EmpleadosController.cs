@@ -10,17 +10,18 @@ public class EmpleadosController : Controller
 {
     private Sist_ControlActivos2Context db = new Sist_ControlActivos2Context();
 
+    // GET: Empleados
     public ActionResult Index()
     {
         CargarListasDesplegables();
 
-        var empleados = db.Empleados
+        var listaEmpleados = db.Empleados
             .Include(e => e.Universidad)
             .Include(e => e.Escuela)
             .Include(e => e.Cargo)
             .ToList();
 
-        ViewBag.Empleados = empleados;
+        ViewBag.Empleados = listaEmpleados;
 
         return View();
     }
@@ -29,34 +30,31 @@ public class EmpleadosController : Controller
     [ValidateAntiForgeryToken]
     public ActionResult CrearEmpleado(Empleado empleado)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            // Validación de cédula única
-            var existe = db.Empleados.Any(e => e.Cedula == empleado.Cedula);
-            if (existe)
-            {
-                TempData["MensajeError"] = "Ya existe un empleado con esta cédula.";
-                return RedirectToAction("Index");
-            }
+            TempData["MensajeError"] = "Por favor revisa los datos ingresados.";
+            CargarListasDesplegables();
+            ViewBag.Empleados = db.Empleados
+                .Include(e => e.Universidad)
+                .Include(e => e.Escuela)
+                .Include(e => e.Cargo)
+                .ToList();
+            return View("Index");
+        }
 
-            // Si no existe, guardar el empleado
-            db.Empleados.Add(empleado);
-            db.SaveChanges();
-
-            TempData["MensajeExito"] = "Empleado registrado exitosamente.";
+        // Validar que la cédula no esté repetida
+        bool cedulaDuplicada = db.Empleados.Any(e => e.Cedula == empleado.Cedula);
+        if (cedulaDuplicada)
+        {
+            TempData["MensajeError"] = "Ya existe un empleado con esta cédula.";
             return RedirectToAction("Index");
         }
 
-        // Si hay errores de validación del modelo
-        CargarListasDesplegables();
+        db.Empleados.Add(empleado);
+        db.SaveChanges();
 
-        ViewBag.Empleados = db.Empleados
-            .Include(e => e.Universidad)
-            .Include(e => e.Escuela)
-            .Include(e => e.Cargo)
-            .ToList();
-
-        return View("Index");
+        TempData["MensajeExito"] = "Empleado registrado exitosamente.";
+        return RedirectToAction("Index");
     }
 
     private void CargarListasDesplegables()
@@ -82,38 +80,30 @@ public class EmpleadosController : Controller
 
     public ActionResult BajaEmpleado()
     {
-
-        var empleadosActivosDb = db.Empleados
+        // Empleados activos
+        var empleadosActivos = db.Empleados
             .Where(e => e.Estado == 1)
-            .Select(e => new
-            {
-                e.IdEmpleado,
-                e.PNU,
-                e.PAU,
-                e.Cedula
-            })
             .ToList();
 
-        ViewBag.EmpleadosActivos = empleadosActivosDb
+        ViewBag.EmpleadosActivos = empleadosActivos
             .Select(e => new SelectListItem
             {
                 Value = e.IdEmpleado.ToString(),
                 Text = $"{e.PNU} {e.PAU} - {e.Cedula}"
             }).ToList();
 
-        var empleadosDadosDeBaja = db.Empleados
+        // Empleados dados de baja
+        var empleadosInactivos = db.Empleados
             .Where(e => e.Estado == 0)
             .Include(e => e.Universidad)
             .Include(e => e.Escuela)
             .Include(e => e.Cargo)
             .ToList();
 
-        ViewBag.EmpleadosBaja = empleadosDadosDeBaja;
+        ViewBag.EmpleadosBaja = empleadosInactivos;
 
         return View();
     }
-
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -133,7 +123,4 @@ public class EmpleadosController : Controller
         TempData["MensajeExito"] = "Empleado dado de baja correctamente.";
         return RedirectToAction("BajaEmpleado");
     }
-
-
-
 }

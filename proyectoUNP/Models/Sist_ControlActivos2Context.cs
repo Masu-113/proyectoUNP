@@ -33,10 +33,10 @@ namespace proyectoUNP.Models
         public DbSet<User> Users { get; set; }
         public DbSet<TipoUser> TipoUsers { get; set; }
         /*public DbSet<Depreciacion> Depreciaciones { get; set; }
+        public DbSet<HistorialMovimiento> HistorialMovimientos { get; set; }*/
         public DbSet<DetallesMantenimiento> DetallesMantenimientos { get; set; }
         public DbSet<TipoMantenimiento> TipoMantenimientos { get; set; }
         public DbSet<Mantenimiento> Mantenimientos { get; set; }
-        public DbSet<HistorialMovimiento> HistorialMovimientos { get; set; }*/
         public DbSet<Adquisicion> Adquisiciones { get; set; }
     }
 }
