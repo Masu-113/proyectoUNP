@@ -79,4 +79,61 @@ public class EmpleadosController : Controller
             Text = c.NombreCargo
         }).ToList();
     }
+
+    public ActionResult BajaEmpleado()
+    {
+
+        var empleadosActivosDb = db.Empleados
+            .Where(e => e.Estado == 1)
+            .Select(e => new
+            {
+                e.IdEmpleado,
+                e.PNU,
+                e.PAU,
+                e.Cedula
+            })
+            .ToList();
+
+        ViewBag.EmpleadosActivos = empleadosActivosDb
+            .Select(e => new SelectListItem
+            {
+                Value = e.IdEmpleado.ToString(),
+                Text = $"{e.PNU} {e.PAU} - {e.Cedula}"
+            }).ToList();
+
+        var empleadosDadosDeBaja = db.Empleados
+            .Where(e => e.Estado == 0)
+            .Include(e => e.Universidad)
+            .Include(e => e.Escuela)
+            .Include(e => e.Cargo)
+            .ToList();
+
+        ViewBag.EmpleadosBaja = empleadosDadosDeBaja;
+
+        return View();
+    }
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult DarDeBaja(int IdEmpleado)
+    {
+        var empleado = db.Empleados.Find(IdEmpleado);
+        if (empleado == null)
+        {
+            TempData["MensajeError"] = "Empleado no encontrado.";
+            return RedirectToAction("BajaEmpleado");
+        }
+
+        empleado.Estado = 0;
+        db.Entry(empleado).State = EntityState.Modified;
+        db.SaveChanges();
+
+        TempData["MensajeExito"] = "Empleado dado de baja correctamente.";
+        return RedirectToAction("BajaEmpleado");
+    }
+
+
+
 }

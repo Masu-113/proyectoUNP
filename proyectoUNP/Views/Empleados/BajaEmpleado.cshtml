@@ -1,0 +1,132 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var empleadosBaja = ViewBag.EmpleadosBaja as IEnumerable<proyectoUNP.Models.Empleado> ?? new List<proyectoUNP.Models.Empleado>();
+    var empleadosActivos = ViewBag.EmpleadosActivos as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+
+}
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["MensajeError"]</div>
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["MensajeExito"]</div>
+}
+
+<style>
+    .titulo {
+        font-weight: bold;
+        font-size: 20px;
+        color: #001c7d;
+        margin-bottom: 20px;
+    }
+
+    .aviso {
+        background-color: #dc3545;
+        padding: 10px;
+        color: white;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Dar de Baja a Empleado</h4>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("DarDeBaja", "Empleados", FormMethod.Post, new { id = "formBajaEmpleado" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="IdEmpleado">Seleccionar Empleado Activo</label>
+                        <select class="form-control" id="IdEmpleado" name="IdEmpleado" required>
+                            <option value="">--Seleccione--</option>
+                            @foreach (var emp in empleadosActivos)
+                            {
+                                <option value="@emp.Value">@emp.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-danger" id="btnAbrirModal">
+                    Dar de Baja
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Modal Confirmación -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Baja</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas dar de baja a este empleado?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnConfirmarBaja">Sí, Dar de Baja</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de empleados dados de baja -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Empleados Dados de Baja</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th>Universidad</th>
+                        <th>Escuela</th>
+                        <th>Cargo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var emp in empleadosBaja)
+                    {
+                        <tr>
+                            <td>@emp.IdEmpleado</td>
+                            <td>@emp.PNU @emp.PAU</td>
+                            <td>@emp.Cedula</td>
+                            <td>@(emp.Universidad?.Nombre ?? "-")</td>
+                            <td>@(emp.Escuela?.NombreEscuela ?? "-")</td>
+                            <td>@(emp.Cargo?.NombreCargo ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("btnAbrirModal").addEventListener("click", function () {
+            $('#modalConfirmar').modal('show');
+        });
+
+        document.getElementById("btnConfirmarBaja").addEventListener("click", function () {
+            document.getElementById("formBajaEmpleado").submit();
+        });
+    </script>
+}

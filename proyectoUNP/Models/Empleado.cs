@@ -42,5 +42,7 @@ namespace proyectoUNP.Models
 
         [ForeignKey("IdCargo")]
         public virtual Cargo Cargo { get; set; }
+
+        public int Estado { get; set; } = 1;
     }
 }

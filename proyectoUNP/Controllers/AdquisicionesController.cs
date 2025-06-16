@@ -28,7 +28,11 @@ public class AdquisicionesController : Controller
     public ActionResult Create()
     {
         ViewBag.IdProveedor = new SelectList(db.Proveedores, "IdProveedor", "Nombre");
-        ViewBag.IdEmpleado = new SelectList(db.Empleados, "IdEmpleado", "PNU");
+        ViewBag.IdEmpleado = new SelectList(
+            db.Empleados.Where(e => e.Estado == 1),  // FILTRO AQUÍ
+            "IdEmpleado",
+            "PNU"
+        );
         return View();
     }
 
@@ -78,10 +82,12 @@ public class AdquisicionesController : Controller
             Text = p.Nombre
         }).ToList();
 
-        ViewBag.Empleados = db.Empleados.Select(e => new SelectListItem
-        {
-            Value = e.IdEmpleado.ToString(),
-            Text = e.PNU + " " + e.PAU
-        }).ToList();
+        ViewBag.Empleados = db.Empleados
+            .Where(e => e.Estado == 1)
+            .Select(e => new SelectListItem
+            {
+                Value = e.IdEmpleado.ToString(),
+                Text = e.PNU + " " + e.PAU
+            }).ToList();
     }
 }
